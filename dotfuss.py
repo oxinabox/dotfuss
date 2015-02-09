@@ -3,7 +3,9 @@ import config
 import glob
 import os.path as path
 
-def link_status(include=".*", exclude="*.swp"):
+import sys
+
+def status(include=".*", exclude="*.swp"):
     def get_files(fpath):
         def get_interior_name(exterior_filename):
             return exterior_filename[len(fpath):]
@@ -19,23 +21,20 @@ def link_status(include=".*", exclude="*.swp"):
     castle_files = get_files(config.CASTLE_PATH)
     
     print("\nLink Status\n" + 10*"-")
-    print('\n')  
    
-    print home_files
-    print castle_files
-
     for filename in home_files.intersection(castle_files):
-        print filename
         if path.samefile(path.join(config.CASTLE_PATH, filename),
                          path.join(config.HOME, filename)):
-            print(':-)')
             print config.bcolors.OKGREEN +  "[LINKED] " + filename
         else: print config.bcolors.FAIL +  "[BORKED] " + filename
     
-    print('\n')   
+    print('')   
     for filename in home_files - castle_files:
         print config.bcolors.WARNING +  "[UNCONTROLLED] "+filename
  
+modes = {'status': status}
+
 
 if __name__ =="__main__":
-    link_status()
+    modes[sys.argv[1]]()
+
