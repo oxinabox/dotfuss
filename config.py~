@@ -1,0 +1,5 @@
+
+HOME = '~'
+CASTLE_PATH = HOME + '/dotfuss-castle'
+
+
