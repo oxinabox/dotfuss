@@ -5,6 +5,12 @@ import os.path as path
 
 import sys
 
+class states(object):
+    LINKED = config.bcolors.OKGREEN +  "[LINKED] "
+    SAME_NAME_NOT_LINKED = config.bcolors.FAIL +  "[BORKED] "
+    UNCONTROLLED =  config.bcolors.WARNING +  "[UNCONTROLLED] "
+    
+
 def status(include=".*", exclude="*.swp"):
     def get_files(fpath):
         def get_interior_name(exterior_filename):
@@ -22,17 +28,25 @@ def status(include=".*", exclude="*.swp"):
     
     print("\nLink Status\n" + 10*"-")
    
+    file_status = {}
     for filename in home_files.intersection(castle_files):
         if path.samefile(path.join(config.CASTLE_PATH, filename),
                          path.join(config.HOME, filename)):
-            print config.bcolors.OKGREEN +  "[LINKED] " + filename
-        else: print config.bcolors.FAIL +  "[BORKED] " + filename
-    
-    print('')   
+            file_status[filename] = states.LINKED
+        else: file_status[filename] = states.SAME_NAME_NOT_LINKED 
+
     for filename in home_files - castle_files:
-        print config.bcolors.WARNING +  "[UNCONTROLLED] "+filename
- 
-modes = {'status': status}
+        file_status[filename] = states.UNCONTROLLED
+    
+    return file_status
+
+
+def print_status():
+    for (filename, state) in sorted(status().items()):
+        print state+filename
+
+
+modes = {'status': print_status}
 
 
 if __name__ =="__main__":
